@@ -1,5 +1,7 @@
 import argparse
 
+import wandb
+
 from data_loader import load_and_cache_examples
 from trainer import Trainer
 from utils import init_logger, load_tokenizer, set_seed
@@ -9,6 +11,8 @@ def main(args):
     init_logger()
     set_seed(args)
     tokenizer = load_tokenizer(args)
+
+    wandb.init(project='R-BERT', name='Testing R-BERT')
 
     train_dataset = load_and_cache_examples(args, tokenizer, mode="train")
     test_dataset = load_and_cache_examples(args, tokenizer, mode="test")

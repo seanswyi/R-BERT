@@ -6,6 +6,7 @@ import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from tqdm import tqdm, trange
 from transformers import AdamW, BertConfig, get_linear_schedule_with_warmup
+import wandb
 
 from model import RBERT
 from utils import compute_metrics, get_label, write_prediction
@@ -110,6 +111,8 @@ class Trainer(object):
                 if self.args.gradient_accumulation_steps > 1:
                     loss = loss / self.args.gradient_accumulation_steps
 
+                wandb.log({'loss': loss})
+
                 loss.backward()
 
                 tr_loss += loss.item()
@@ -191,6 +194,8 @@ class Trainer(object):
 
         result = compute_metrics(preds, out_label_ids)
         results.update(result)
+
+        wandb.log(result)
 
         logger.info("***** Eval results *****")
         for key in sorted(results.keys()):

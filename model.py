@@ -75,6 +75,7 @@ class RBERT(BertPreTrainedModel):
 
         # Softmax
         if labels is not None:
+            import pdb; pdb.set_trace()
             if self.num_labels == 1:
                 loss_fct = nn.MSELoss()
                 loss = loss_fct(logits.view(-1), labels.view(-1))
