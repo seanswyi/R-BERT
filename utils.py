@@ -50,15 +50,20 @@ def set_seed(args):
 
 
 def compute_metrics(preds, labels):
-    assert len(preds) == len(labels)
+    # import pdb; pdb.set_trace()
+    # assert len(preds) == len(labels)
+    labels = torch.argmax(torch.tensor(labels), dim=-1)
     return acc_and_f1(preds, labels)
 
 
 def simple_accuracy(preds, labels):
-    return (preds == labels).mean()
+    # import pdb; pdb.set_trace()
+    return (np.array(preds) == np.array(labels)).mean()
+    # return (preds == labels).mean()
 
 
 def acc_and_f1(preds, labels, average="macro"):
+    # import pdb; pdb.set_trace()
     acc = simple_accuracy(preds, labels)
     return {
         "acc": acc,

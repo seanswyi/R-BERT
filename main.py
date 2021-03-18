@@ -12,7 +12,7 @@ def main(args):
     set_seed(args)
     tokenizer = load_tokenizer(args)
 
-    wandb.init(project='R-BERT', name='Testing R-BERT')
+    wandb.init(project='R-BERT', name='R-BERT w/ One-Hot')
 
     train_dataset = load_and_cache_examples(args, tokenizer, mode="train")
     test_dataset = load_and_cache_examples(args, tokenizer, mode="test")
@@ -117,5 +117,10 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+
+    if args.task == 'semeval':
+        args.num_labels = 19
+    elif args.task == 'tacred':
+        args.num_labels = 42
 
     main(args)

@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from transformers import BertModel, BertPreTrainedModel
 
+from at_loss import ATLoss
+
 
 class FCLayer(nn.Module):
     def __init__(self, input_dim, output_dim, dropout_rate=0.0, use_activation=True):
@@ -75,13 +77,15 @@ class RBERT(BertPreTrainedModel):
 
         # Softmax
         if labels is not None:
-            import pdb; pdb.set_trace()
             if self.num_labels == 1:
                 loss_fct = nn.MSELoss()
                 loss = loss_fct(logits.view(-1), labels.view(-1))
             else:
-                loss_fct = nn.CrossEntropyLoss()
-                loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
+                loss_fct = ATLoss()
+                # loss_fct = nn.BCEWithLogitsLoss()
+                loss = loss_fct(logits, labels)
+                # loss_fct = nn.CrossEntropyLoss()
+                # loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
 
             outputs = (loss,) + outputs
 

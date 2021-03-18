@@ -247,9 +247,10 @@ def load_and_cache_examples(args, tokenizer, mode):
         ),
     )
 
-    if os.path.exists(cached_features_file):
+    # Fixed this part.
+    if not os.path.exists(cached_features_file):
         logger.info("Loading features from cached file %s", cached_features_file)
-        features = torch.load(cached_features_file)
+        # features = torch.load(cached_features_file)
     else:
         logger.info("Creating features from dataset file at %s", args.data_dir)
         if mode == "train":
@@ -264,8 +265,8 @@ def load_and_cache_examples(args, tokenizer, mode):
         features = convert_examples_to_features(
             examples, args.max_seq_len, tokenizer, add_sep_token=args.add_sep_token
         )
-        logger.info("Saving features into cached file %s", cached_features_file)
-        torch.save(features, cached_features_file)
+        # logger.info("Saving features into cached file %s", cached_features_file)
+        # torch.save(features, cached_features_file)
 
     # Convert to Tensors and build dataset
     all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
@@ -276,11 +277,16 @@ def load_and_cache_examples(args, tokenizer, mode):
 
     all_label_ids = torch.tensor([f.label_id for f in features], dtype=torch.long)
 
+    one_hot_labels = torch.zeros(size=(all_label_ids.shape[0], args.num_labels))
+    for i in range(one_hot_labels.shape[0]):
+        one_hot_labels[i][all_label_ids[i]] = 1
+
     dataset = TensorDataset(
         all_input_ids,
         all_attention_mask,
         all_token_type_ids,
-        all_label_ids,
+        one_hot_labels,
+        # all_label_ids,
         all_e1_mask,
         all_e2_mask,
     )
